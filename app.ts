@@ -1,23 +1,26 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
+import path from 'path';
+
+import { adminRouter } from './routes/admin.routes';
+import { shopRouter } from './routes/shop.routes';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
 
-app.use((req, res, next) => {
-  console.log('middleware 1')
-  next();
-});
+export const rootDir  = __dirname;
 
-app.use((req, res, next) => {
-  console.log('middleware 2')
-  res.send('<h1>123</h1>');
-});
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
+app.use('/admin', adminRouter);
+app.use(shopRouter);
+
+app.use((req, res) => {
+  res.sendFile(path.join(rootDir, 'views', '404.html'));
 });
 
 app.listen(port, () => {
