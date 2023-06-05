@@ -8,5 +8,6 @@ export const shopRouter = Router();
 
 shopRouter.get('/', (req, res) => {
   console.log({ products });
-  res.sendFile(path.join(rootDir, 'views', 'shop.html'));
+  // res.sendFile(path.join(rootDir, 'views', 'shop.html'));
+  res.render('shop', { products, pageTitle: 'Main', path: '/' });
 });
