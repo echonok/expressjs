@@ -5,6 +5,7 @@ import path from 'path';
 
 import { adminRouter } from './routes/admin.routes';
 import { shopRouter } from './routes/shop.routes';
+import { getError } from './controllers/error.controller';
 
 dotenv.config();
 
@@ -21,10 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/admin', adminRouter);
 app.use('/', shopRouter);
-
-app.use((req, res) => {
-  res.render('404', { pageTitle: 'Page not found', path: null })
-});
+app.use(getError);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
