@@ -2,6 +2,13 @@ import * as fs from 'fs';
 import path from 'path';
 import { rootDir } from '../app';
 
+export interface IProduct {
+  title: string;
+  imageUrl: string;
+  description: string;
+  price: number;
+}
+
 const getProductsFromFile = (cb: any) => {
   const filePath = path.join(rootDir, 'data', 'products.json') ?? '';
   fs.readFile(
@@ -16,13 +23,19 @@ const getProductsFromFile = (cb: any) => {
   );
 }
 
-export class Product {
+export class Product implements IProduct {
   title: string;
+  imageUrl: string;
+  description: string;
+  price: number;
 
   constructor(
-    title: string,
+    product: IProduct,
   ) {
-    this.title = title;
+    this.title = product.title;
+    this.imageUrl = product.imageUrl;
+    this.description = product.description;
+    this.price = product.price;
   }
 
   save() {
