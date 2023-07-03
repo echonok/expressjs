@@ -4,7 +4,6 @@ import { Cart } from '../models/cart.model';
 
 export const getProducts: RequestHandler = async (req, res) => {
   Product.fetchAll((products: any) => {
-    console.log({ products });
     res.render(
       'shop/product-list',
       {

@@ -3,6 +3,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 import { rootDir } from '../app';
+import { Cart } from './cart.model';
 
 export interface IProduct {
   id: string;
@@ -72,5 +73,23 @@ export class Product implements IProduct {
       const foundProduct = products.find((product) => product.id === id);
       cb(foundProduct);
     });
+  }
+
+  static deleteById(id: string) {
+    getProductsFromFile((products: IProduct[]) => {
+      const product = products.find((p) => p.id === id);
+      if (!product) {
+        return;
+      }
+      const filePath = path.join(rootDir, 'data', 'products.json') ?? '';
+      let updatedProducts = products.filter((product) => product.id !== id);
+      fs.writeFile(filePath, JSON.stringify(updatedProducts), (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        Cart.deleteProduct(id, product.price);
+      })
+    })
   }
 }
