@@ -31,11 +31,12 @@ export class Product implements IProduct {
   imageUrl: string;
   description: string;
   price: number;
-  id!: string;
+  id: string;
 
   constructor(
     product: IProduct,
   ) {
+    this.id = product.id;
     this.title = product.title;
     this.imageUrl = product.imageUrl;
     this.description = product.description;
@@ -44,12 +45,19 @@ export class Product implements IProduct {
 
   save() {
     const filePath = path.join(rootDir, 'data', 'products.json') ?? '';
-    this.id = uuidv4();
-    getProductsFromFile((products: any[]) => {
-      products.push(this);
-      fs.writeFile(filePath, JSON.stringify(products), (err) => {
+    getProductsFromFile((products: IProduct[]) => {
+      let productToSave = [...products];
+      console.log('this.id', this.id)
+      if (this.id) {
+        const foundProductIndex = productToSave.findIndex((product) => product.id === this.id);
+        productToSave[foundProductIndex] = this;
+      } else {
+        this.id = uuidv4();
+        productToSave.push(this);
+      }
+      fs.writeFile(filePath, JSON.stringify(productToSave), (err) => {
         if (err) {
-          console.error(err)
+          console.error(err);
         }
       })
     })

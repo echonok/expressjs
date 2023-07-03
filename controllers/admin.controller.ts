@@ -3,13 +3,40 @@ import { IProduct, Product } from '../models/product.model';
 
 export const getAddProduct: RequestHandler = async (req, res) => {
   return res.render(
-    'admin/add-product',
+    'admin/edit-product',
     {
       pageTitle: 'Add product',
       path: '/admin/add-product',
       activeProduct: true,
-      productCSS: true,
+      editing: false,
     });
+}
+
+export const getEditProduct: RequestHandler<{ productId: string }> = async (req, res) => {
+  const productId = req.params.productId;
+  Product.findById(productId, (product: IProduct) => {
+    if (!product) {
+      return res.redirect('/');
+    }
+    res.render(
+      'admin/edit-product',
+      {
+        pageTitle: 'Edit product',
+        path: '/admin/edit-product',
+        activeProduct: true,
+        editing: true,
+        product: product,
+      });
+  });
+}
+
+export const postEditProduct: RequestHandler = async (req, res) => {
+  // const { productId } = (<{ productId: string }>req.body);
+  const product = (<IProduct>req.body);
+  console.log('product', product)
+  const updatedProduct = new Product(product);
+  updatedProduct.save();
+  return res.redirect('/admin/products');
 }
 
 export const postAddProductView: RequestHandler = async (req, res) => {
