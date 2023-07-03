@@ -48,7 +48,6 @@ export class Product implements IProduct {
     const filePath = path.join(rootDir, 'data', 'products.json') ?? '';
     getProductsFromFile((products: IProduct[]) => {
       let productToSave = [...products];
-      console.log('this.id', this.id)
       if (this.id) {
         const foundProductIndex = productToSave.findIndex((product) => product.id === this.id);
         productToSave[foundProductIndex] = this;

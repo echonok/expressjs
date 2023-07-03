@@ -8,7 +8,7 @@ export interface ICartProduct {
   qty: number;
 }
 
-interface ICart {
+export interface ICart {
   products: ICartProduct[];
   totalPrice: number;
 }
@@ -16,20 +16,15 @@ interface ICart {
 export class Cart {
 
   static addProduct(id: string, productPrice: number) {
-    console.log({ id, productPrice })
     const filePath = path.join(rootDir, 'data', 'cart.json') ?? '';
     fs.readFile(
       filePath,
       (err: any, fileContent: any) => {
         let cart: ICart = { products: [], totalPrice: 0 };
         if (!err) {
-          console.log('before');
-          console.log({ fileContent })
           cart = JSON.parse(fileContent);
-          console.log({ cart })
         }
         const existingProductIndex = cart.products.findIndex((product) => product.productId === id);
-        console.log({ existingProductIndex });
         const existingProduct = cart.products[existingProductIndex];
         let updatedProduct: ICartProduct;
         if (existingProduct) {
@@ -54,12 +49,10 @@ export class Cart {
     fs.readFile(
       filePath,
       (err: any, cart: any) => {
-        console.log({ cart })
         if (err) {
           return;
         }
         const updatedCart = <ICart>JSON.parse(cart);
-        console.log({ 'updatedCart': updatedCart })
         const product = updatedCart.products.find((product) => product.productId === id);
         if (product) {
           const productQty = product.qty;
@@ -71,5 +64,19 @@ export class Cart {
         }
       }
     );
+  }
+
+  static getCartProducts(cb: any) {
+    const filePath = path.join(rootDir, 'data', 'cart.json') ?? '';
+    fs.readFile(
+      filePath,
+      (err: any, cart: any) => {
+        if (err) {
+          cb(null);
+        } else {
+          cb(JSON.parse(cart));
+        }
+      }
+    )
   }
 }

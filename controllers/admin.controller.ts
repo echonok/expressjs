@@ -32,7 +32,6 @@ export const getEditProduct: RequestHandler<{ productId: string }> = async (req,
 
 export const postEditProduct: RequestHandler = async (req, res) => {
   const product = (<IProduct>req.body);
-  console.log('product', product)
   const updatedProduct = new Product(product);
   updatedProduct.save();
   return res.redirect('/admin/products');
@@ -41,7 +40,6 @@ export const postEditProduct: RequestHandler = async (req, res) => {
 export const deleteProduct: RequestHandler<{ productId: string }> = async (req, res) => {
   const { productId } = (<{ productId: string }>req.body);
   if (productId) {
-    console.log('deleteProduct product', productId);
     Product.deleteById(productId);
   }
   return res.redirect('/admin/products');
@@ -62,7 +60,6 @@ export const getProducts: RequestHandler = async (req, res) => {
         products,
         pageTitle: 'Admin products',
         path: '/admin/products',
-        hasProducts: !!products.length,
       }
     )
   });
