@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-import { rootDir } from '../app';
+import { DB, rootDir } from '../app';
 import { Cart } from './cart.model';
 
 export interface IProduct {
@@ -44,34 +44,24 @@ export class Product implements IProduct {
     this.price = +product.price;
   }
 
-  save() {
-    const filePath = path.join(rootDir, 'data', 'products.json') ?? '';
-    getProductsFromFile((products: IProduct[]) => {
-      let productToSave = [...products];
-      if (this.id) {
-        const foundProductIndex = productToSave.findIndex((product) => product.id === this.id);
-        productToSave[foundProductIndex] = this;
-      } else {
-        this.id = uuidv4();
-        productToSave.push(this);
-      }
-      fs.writeFile(filePath, JSON.stringify(productToSave), (err) => {
-        if (err) {
-          console.error(err);
-        }
-      })
-    })
+  async save() {
+    await DB.execute(
+      'INSERT INTO products (title, price, imageUrl, description) VALUES (?,?,?,?)',
+      [this.title, this.price, this.imageUrl,  this.description]
+    );
   }
 
-  static fetchAll(cb: any) {
-    getProductsFromFile(cb);
+  static async fetchAll() {
+    const [products] = await DB.execute('SELECT * FROM products')
+    return (<IProduct[]>products);
   }
 
-  static findById(id: string, cb: any) {
-    getProductsFromFile((products: IProduct[]) => {
-      const foundProduct = products.find((product) => product.id === id);
-      cb(foundProduct);
-    });
+  static async findById(id: string) {
+    const [productsFound] = await DB.execute('SELECT * FROM products WHERE products.id = ?', [id]);
+    if (!(<IProduct[]>productsFound).length) {
+      return null;
+    }
+    return (<IProduct[]>productsFound).pop();
   }
 
   static deleteById(id: string) {
