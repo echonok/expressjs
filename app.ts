@@ -33,24 +33,6 @@ app.use('/admin', adminRouter);
 app.use('/', shopRouter);
 app.use(getError);
 
-Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
-User.hasMany(Product);
-
-sequelize
-  // .sync({ force: true })
-  .sync()
-  .then(() => {
-    console.log('connected to DB')
-    return User.findByPk(1);
-  })
-  .then((user) => {
-    if (!user) {
-      return User.create({ name: 'Nick', email: 'email@email' });
-    }
-    return user;
-  })
-  .catch((err) => console.error({ err }));
-
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
