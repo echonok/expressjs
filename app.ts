@@ -6,8 +6,6 @@ import path from 'path';
 import { adminRouter } from './routes/admin.routes';
 import { shopRouter } from './routes/shop.routes';
 import { getError } from './controllers/error.controller';
-import { sequelize } from './utils/database.util';
-import { Product } from './models/product.model';
 import { User } from './models/user.model';
 
 dotenv.config();
