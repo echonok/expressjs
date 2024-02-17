@@ -2,7 +2,6 @@ import { ObjectId } from 'mongodb';
 
 import { getDb } from '../utils/database.util';
 import { MODELS } from './_models';
-import { Product } from './product.model';
 
 export interface IUser {
   _id?: ObjectId;
@@ -24,10 +23,6 @@ export class User {
     } else {
       return db.collection(MODELS.users).insertOne(this.user);
     }
-  }
-
-  addToCart(product: Product) {
-
   }
 
   static async findById(userId: string) {

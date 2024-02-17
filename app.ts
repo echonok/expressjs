@@ -25,7 +25,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(async (req, _res, next) => {
   const user = await User.findById('65cd2aaa864ea202d8d05275');
-  console.log({ user });
   if (user) {
     req.headers.userId = user._id.toString();
   }
@@ -37,7 +36,7 @@ app.use(getError);
 
 mongoConnect((_err, _client) => {
   app.listen(port, async () => {
-    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+    console.log(`⚡️ [server]: Server is running at http://localhost:${port}`);
     const users = await User.fetchAll();
     if (!users.length) {
       const user = new User({

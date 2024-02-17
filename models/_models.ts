@@ -1,5 +1,5 @@
 export const MODELS = {
   products: 'products',
   users: 'users',
-  cart: 'carts',
+  carts: 'carts',
 };

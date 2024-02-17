@@ -21,7 +21,11 @@ export class Product {
 
   save() {
     const db = getDb();
-    const dataToSave = { ...this.product, userId: this.userId ? new ObjectId(this.userId) : null };
+    const dataToSave = {
+      ...this.product,
+      userId: this.userId ? new ObjectId(this.userId) : null,
+      price: +this.product.price,
+    };
     if (this.product._id) {
       const { _id, ...update } = dataToSave;
       return db.collection(MODELS.products).updateOne({ _id: new ObjectId(_id) }, { $set: update });
@@ -44,10 +48,11 @@ export class Product {
   static async fetchAll() {
     const db = getDb();
     try {
-      return await db
+      const products = await db
         .collection(MODELS.products)
         .find()
         .toArray();
+      return products as IProduct[];
     } catch (err) {
       console.error({ err });
     }

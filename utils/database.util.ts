@@ -10,7 +10,7 @@ export const MongoConnect = (callback: Callback) => {
     'mongodb+srv://dev:7J6xZRgDf1ufJkdE@dev.m2tjfcf.mongodb.net/shop?retryWrites=true&w=majority'
   )
     .then((client) => {
-      console.log('Connected');
+      console.log('🔗 [MongoDB]: Connected');
       _db = client.db();
       callback(null, client);
     })

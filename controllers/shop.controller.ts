@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 
 import { Product } from '../models/product.model';
+import { Cart } from '../models/cart.model';
 
 export const getProducts: RequestHandler = async (req, res) => {
   const products = await Product.fetchAll();
@@ -43,30 +44,27 @@ export const getIndex: RequestHandler = async (req, res) => {
 };
 
 export const getCart: RequestHandler = async (req, res) => {
-  const products = await Product.fetchAll();
-  // Cart.getCartProducts((cart: ICart) => {
-  //   const productsToShow = cart.products.map((product) => {
-  //     return { product: products.find((p) => p.id === product.productId), qty: product.qty };
-  //   });
-  //   res.render(
-  //     'shop/cart',
-  //     {
-  //       products: productsToShow,
-  //       pageTitle: 'Your cart',
-  //       path: '/cart',
-  //     }
-  //   )
-  // });
+  const { userId } = <{ userId: string }>req.headers;
+  const userCart = await Cart.getUserCartWithProducts(userId);
+  res.render(
+    'shop/cart',
+    {
+      products: userCart.products,
+      pageTitle: 'Your cart',
+      path: '/cart',
+    }
+  )
 };
 
 export const postCart: RequestHandler = async (req, res) => {
-  // const { productId } = (<{ productId: string }>req.body);
-  // const product = await Product.findByPk(productId);
-  // if (!product) {
-  //   return res.redirect('/');
-  // }
-  // Cart.addProduct(product.id, product.price);
-  // res.redirect('/cart');
+  const { productId } = (<{ productId: string }>req.body);
+  const product = await Product.fetchById(productId);
+  if (!product) {
+    return res.redirect('/');
+  }
+  const { userId } = <{ userId: string }>req.headers;
+  await Cart.addProduct(productId, +product.price, userId);
+  res.redirect('/cart');
 };
 
 export const getOrders: RequestHandler = async (req, res) => {
@@ -90,12 +88,12 @@ export const getCheckout: RequestHandler = async (req, res) => {
 };
 
 export const postCartDeleteItem: RequestHandler = async (req, res) => {
-  // const { productId } = (<{ productId: string }>req.body);
-  // const product = await Product.findByPk(productId);
-  // console.log({ product })
-  // if (!product) {
-  //   return res.redirect('/');
-  // }
-  // Cart.deleteProduct(productId, product.price);
-  // res.redirect('/cart');
+  const { productId } = (<{ productId: string }>req.body);
+  const product = await Product.fetchById(productId);
+  if (!product) {
+    return res.redirect('/');
+  }
+  const { userId } = <{ userId: string }>req.headers;
+  await Cart.deleteProduct(productId, product.price, userId);
+  res.redirect('/cart');
 };
