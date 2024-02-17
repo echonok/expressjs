@@ -13,7 +13,7 @@ import {
 export const shopRouter = Router();
 
 shopRouter.get('/', getIndex);
-shopRouter.get('/products/:id', getProduct);
+shopRouter.get('/products/:_id', getProduct);
 shopRouter.get('/products', getProducts);
 shopRouter.get('/cart', getCart);
 shopRouter.post('/cart', postCart);
