@@ -1,8 +1,5 @@
-import path from 'path';
-import fs from 'fs';
-
-import { rootDir } from '../app';
 import { ObjectId } from 'mongodb';
+
 import { getDb } from '../utils/database.util';
 import { MODELS } from './_models';
 import { IProduct } from './product.model';

@@ -70,10 +70,9 @@ export class User {
 
   static async getOrders(userId: string) {
     const db = getDb();
-    const orders = await db
+    return await db
       .collection(MODELS.orders)
       .find({ userId: new ObjectId(userId) })
       .toArray();
-    return orders;
   }
 }
