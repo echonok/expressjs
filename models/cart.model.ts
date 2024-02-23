@@ -72,14 +72,13 @@ export class Cart {
       .collection(MODELS.products)
       .find({ _id: { $in: productIds.map((id) => new ObjectId(id)) } })
       .toArray();
-    const cartProducts = userCart.products.map((product) => {
+    userCart.products = userCart.products.map((product) => {
       const cartProduct = (products as IProduct[]).find((p) => p._id.toString() === product.productId);
       return {
         ...product,
         product: cartProduct,
       };
     });
-    userCart.products = cartProducts;
     return userCart;
   }
 
