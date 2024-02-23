@@ -103,20 +103,5 @@ export class Cart {
         { upsert: true },
       );
     }
-
-  }
-
-  static getCartProducts(cb: any) {
-    const filePath = path.join(rootDir, 'data', 'cart.json') ?? '';
-    fs.readFile(
-      filePath,
-      (err: any, cart: any) => {
-        if (err) {
-          cb(null);
-        } else {
-          cb(JSON.parse(cart));
-        }
-      },
-    );
   }
 }

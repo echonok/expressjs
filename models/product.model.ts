@@ -37,9 +37,9 @@ export class Product {
   static async fetchById(productId: string) {
     const db = getDb();
     try {
-      return await db
+      return (await db
         .collection(MODELS.products)
-        .findOne(new ObjectId(productId));
+        .findOne(new ObjectId(productId))) as IProduct;
     } catch (err) {
       console.error({ err });
     }
