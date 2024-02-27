@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { IProduct, Product } from '../models/product.model';
+import { IProduct, IProductWithId, ProductModel } from '../models/product.model';
 
 export const getAddProduct: RequestHandler = async (_req, res) => {
   return res.render(
@@ -15,7 +15,7 @@ export const getAddProduct: RequestHandler = async (_req, res) => {
 
 export const getEditProduct: RequestHandler<{ productId: string }> = async (req, res) => {
   const productId = req.params.productId;
-  const product = await Product.fetchById(productId);
+  const product = await ProductModel.findById(productId);
   if (!product) {
     return res.redirect('/');
   }
@@ -31,17 +31,16 @@ export const getEditProduct: RequestHandler<{ productId: string }> = async (req,
 };
 
 export const postEditProduct: RequestHandler = async (req, res) => {
-  const product = <IProduct>req.body;
+  const { _id, ...product } = <IProductWithId>req.body;
   const { userId } = <{ userId: string }>req.headers;
-  const newProduct = new Product(product, userId);
-  await newProduct.save();
+  await ProductModel.findByIdAndUpdate(_id, { ...product, userId }, { upsert: true, new: true });
   return res.redirect('/admin/products');
 };
 
 export const deleteProduct: RequestHandler<{ productId: string }> = async (req, res) => {
   const { productId } = (<{ productId: string }>req.body);
   if (productId) {
-    await Product.deleteById(productId);
+    await ProductModel.findByIdAndDelete(productId);
   }
   return res.redirect('/admin/products');
 };
@@ -49,13 +48,13 @@ export const deleteProduct: RequestHandler<{ productId: string }> = async (req, 
 export const postAddProductView: RequestHandler = async (req, res) => {
   const product = <IProduct>req.body;
   const { userId } = <{ userId: string }>req.headers;
-  const newProduct = new Product(product, userId);
+  const newProduct = new ProductModel({ ...product, userId });
   await newProduct.save();
   return res.redirect('/');
 };
 
 export const getProducts: RequestHandler = async (_req, res) => {
-  const products = await Product.fetchAll();
+  const products = await ProductModel.find();
   res.render(
     'admin/products',
     {
