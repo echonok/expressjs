@@ -2,12 +2,10 @@ import { RequestHandler } from 'express';
 
 import { IProduct, ProductModel } from '../models/product.model';
 import { Cart } from '../models/cart.model';
-import { MODELS } from '../models/_models';
 import { Order } from '../models/order.model';
-// import { Cart } from '../models/cart.model';
-// import { User } from '../models/user.model';
+import { CustomRequest } from '../middlewares/attach-properties.middleware';
 
-export const getProducts: RequestHandler = async (req, res) => {
+export const getProducts: RequestHandler = async (req: CustomRequest, res) => {
   const products = await ProductModel.find();
   res.render(
     'shop/product-list',
@@ -15,12 +13,13 @@ export const getProducts: RequestHandler = async (req, res) => {
       products,
       pageTitle: 'Main',
       path: '/products',
+      isAuthenticated: req.isLoggedIn,
     },
   );
 };
 
-export const getProduct: RequestHandler<{ _id: string }> = async (req, res) => {
-  const id = req.params._id;
+export const getProduct: RequestHandler = async (req: CustomRequest, res) => {
+  const id = <{ _id: string }>req.params;
   const product = await ProductModel.findById(id);
   if (!product) {
     return res.redirect('/');
@@ -31,11 +30,12 @@ export const getProduct: RequestHandler<{ _id: string }> = async (req, res) => {
       pageTitle: product.title,
       product,
       path: '/products',
+      isAuthenticated: req.isLoggedIn,
     },
   );
 };
 
-export const getIndex: RequestHandler = async (req, res) => {
+export const getIndex: RequestHandler = async (req: CustomRequest, res) => {
   const products = await ProductModel.find();
   res.render(
     'shop/index',
@@ -43,11 +43,12 @@ export const getIndex: RequestHandler = async (req, res) => {
       products,
       pageTitle: 'Main',
       path: '/',
+      isAuthenticated: req.isLoggedIn,
     },
   );
 };
 
-export const getCart: RequestHandler = async (req, res) => {
+export const getCart: RequestHandler = async (req: CustomRequest, res) => {
   const { userId } = <{ userId: string }>req.headers;
   const userCart = await Cart
     .findOne({ userId })
@@ -58,11 +59,12 @@ export const getCart: RequestHandler = async (req, res) => {
       products: userCart.products,
       pageTitle: 'Your cart',
       path: '/cart',
+      isAuthenticated: req.isLoggedIn,
     },
   );
 };
 
-export const postCart: RequestHandler = async (req, res) => {
+export const postCart: RequestHandler = async (req: CustomRequest, res) => {
   const { userId } = <{ userId: string }>req.headers;
   const { productId } = (<{ productId: string }>req.body);
   const product = await ProductModel.findById(productId);
@@ -78,7 +80,7 @@ export const postCart: RequestHandler = async (req, res) => {
   res.redirect('/cart');
 };
 
-export const createOrder: RequestHandler = async (req, res) => {
+export const createOrder: RequestHandler = async (req: CustomRequest, res) => {
   const { userId } = <{ userId: string }>req.headers;
   const cart = await Cart.findOne({ userId }).populate('products.productId');
   if (cart) {
@@ -99,7 +101,7 @@ export const createOrder: RequestHandler = async (req, res) => {
   res.redirect('/orders');
 };
 
-export const getOrders: RequestHandler = async (req, res) => {
+export const getOrders: RequestHandler = async (req: CustomRequest, res) => {
   const { userId } = <{ userId: string }>req.headers;
   const orders = await Order.find({ userId });
   res.render(
@@ -108,16 +110,18 @@ export const getOrders: RequestHandler = async (req, res) => {
       orders: orders,
       pageTitle: 'Your orders',
       path: '/orders',
+      isAuthenticated: req.isLoggedIn,
     },
   );
 };
 
-export const getCheckout: RequestHandler = async (req, res) => {
+export const getCheckout: RequestHandler = async (req: CustomRequest, res) => {
   res.render(
     'shop/checkout',
     {
       pageTitle: 'Checkout',
       path: '/checkout',
+      isAuthenticated: req.isLoggedIn,
     },
   );
 };

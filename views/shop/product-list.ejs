@@ -6,6 +6,12 @@
 <%- include('../includes/navigation.ejs') %>
 
 <main>
+    <% if (isAuthenticated) { %>
+        <p>user is logged in</p>
+    <% } else { %>
+        <p>user is logged out</p>
+    <% } %>
+
     <% if (!!products.length) { %>
         <div class="grid">
             <% products.forEach((product) => { %>

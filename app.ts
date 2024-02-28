@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import * as mongoose from 'mongoose';
 
@@ -8,11 +9,16 @@ import { adminRouter } from './routes/admin.routes';
 import { getError } from './controllers/error.controller';
 import { shopRouter } from './routes/shop.routes';
 import { UserModel } from './models/user.model';
+import { authRouter } from './routes/auth.routes';
+import { attachProperties } from './middlewares/attach-properties.middleware';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
+
+app.use(cookieParser())
+app.use(attachProperties);
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -28,6 +34,7 @@ app.use(async (req, _res, next) => {
 });
 app.use('/admin', adminRouter);
 app.use('/', shopRouter);
+app.use('/', authRouter);
 app.use(getError);
 
 mongoose

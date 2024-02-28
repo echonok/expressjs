@@ -1,8 +1,9 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 
 import { IProduct, IProductWithId, ProductModel } from '../models/product.model';
+import { CustomRequest } from '../middlewares/attach-properties.middleware';
 
-export const getAddProduct: RequestHandler = async (_req, res) => {
+export const getAddProduct: RequestHandler = async (req: CustomRequest, res) => {
   return res.render(
     'admin/edit-product',
     {
@@ -10,11 +11,12 @@ export const getAddProduct: RequestHandler = async (_req, res) => {
       path: '/admin/add-product',
       activeProduct: true,
       editing: false,
+      isAuthenticated: req.isLoggedIn,
     });
 };
 
-export const getEditProduct: RequestHandler<{ productId: string }> = async (req, res) => {
-  const productId = req.params.productId;
+export const getEditProduct: RequestHandler = async (req: CustomRequest, res) => {
+  const productId = <{ productId: string }>req.params;
   const product = await ProductModel.findById(productId);
   if (!product) {
     return res.redirect('/');
@@ -27,6 +29,7 @@ export const getEditProduct: RequestHandler<{ productId: string }> = async (req,
       activeProduct: true,
       editing: true,
       product: product,
+      isAuthenticated: req.isLoggedIn,
     });
 };
 
@@ -53,7 +56,7 @@ export const postAddProductView: RequestHandler = async (req, res) => {
   return res.redirect('/');
 };
 
-export const getProducts: RequestHandler = async (_req, res) => {
+export const getProducts: RequestHandler = async (req: CustomRequest, res) => {
   const products = await ProductModel.find();
   res.render(
     'admin/products',
@@ -61,6 +64,7 @@ export const getProducts: RequestHandler = async (_req, res) => {
       products,
       pageTitle: 'Admin products',
       path: '/admin/products',
+      isAuthenticated: req.isLoggedIn,
     },
   );
 };
