@@ -216,3 +216,19 @@ form {
     display: none;
   }
 }
+
+.main-header__item button {
+  text-decoration: none;
+  color: white;
+  background-color: #00695c;
+  border: none;
+  font-family: "Open Sans", sans-serif;
+  font-size: medium;
+  cursor: pointer;
+}
+
+.main-header__item button:hover,
+.main-header__item button:active,
+.main-header__item button.active {
+  color: #ffeb3b;
+}

@@ -7,6 +7,6 @@ export const getError: RequestHandler = async (req: CustomRequest, res) => {
     {
       pageTitle: 'Page not found',
       path: null,
-      isAuthenticated: req.isLoggedIn,
+      isAuthenticated: req.session.isLoggedIn,
     });
 };

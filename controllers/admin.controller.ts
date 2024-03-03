@@ -11,7 +11,7 @@ export const getAddProduct: RequestHandler = async (req: CustomRequest, res) => 
       path: '/admin/add-product',
       activeProduct: true,
       editing: false,
-      isAuthenticated: req.isLoggedIn,
+      isAuthenticated: req.session.isLoggedIn,
     });
 };
 
@@ -29,13 +29,13 @@ export const getEditProduct: RequestHandler = async (req: CustomRequest, res) =>
       activeProduct: true,
       editing: true,
       product: product,
-      isAuthenticated: req.isLoggedIn,
+      isAuthenticated: req.session.isLoggedIn,
     });
 };
 
-export const postEditProduct: RequestHandler = async (req, res) => {
+export const postEditProduct: RequestHandler = async (req: CustomRequest, res) => {
   const { _id, ...product } = <IProductWithId>req.body;
-  const { userId } = <{ userId: string }>req.headers;
+  const { userId } = req.session;
   await ProductModel.findByIdAndUpdate(_id, { ...product, userId }, { upsert: true, new: true });
   return res.redirect('/admin/products');
 };
@@ -48,9 +48,9 @@ export const deleteProduct: RequestHandler<{ productId: string }> = async (req, 
   return res.redirect('/admin/products');
 };
 
-export const postAddProductView: RequestHandler = async (req, res) => {
+export const postAddProductView: RequestHandler = async (req: CustomRequest, res) => {
   const product = <IProduct>req.body;
-  const { userId } = <{ userId: string }>req.headers;
+  const { userId } = req.session;
   const newProduct = new ProductModel({ ...product, userId });
   await newProduct.save();
   return res.redirect('/');
@@ -64,7 +64,7 @@ export const getProducts: RequestHandler = async (req: CustomRequest, res) => {
       products,
       pageTitle: 'Admin products',
       path: '/admin/products',
-      isAuthenticated: req.isLoggedIn,
+      isAuthenticated: req.session.isLoggedIn,
     },
   );
 };
