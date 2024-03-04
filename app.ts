@@ -4,15 +4,15 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import * as mongoose from 'mongoose';
+import session from 'express-session';
+import MongoDBStore from 'connect-mongodb-session';
+import flash from 'connect-flash';
 
 import { adminRouter } from './routes/admin.routes';
 import { getError } from './controllers/error.controller';
 import { shopRouter } from './routes/shop.routes';
-import { UserModel } from './models/user.model';
 import { authRouter } from './routes/auth.routes';
 import { attachProperties } from './middlewares/attach-properties.middleware';
-import session from 'express-session';
-import MongoDBStore from 'connect-mongodb-session';
 
 dotenv.config();
 
@@ -29,6 +29,7 @@ const store = new MongoStore({
 app.use(session({ secret: 'my_secret', resave: false, saveUninitialized: false, store }));
 app.use(cookieParser());
 app.use(attachProperties);
+app.use(flash());
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
