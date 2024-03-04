@@ -1,4 +1,4 @@
-import { RequestHandler, Response } from 'express';
+import { RequestHandler } from 'express';
 
 import { IProduct, IProductWithId, ProductModel } from '../models/product.model';
 import { CustomRequest } from '../middlewares/attach-properties.middleware';

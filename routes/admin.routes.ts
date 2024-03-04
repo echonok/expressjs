@@ -7,12 +7,13 @@ import {
   postAddProductView,
   postEditProduct
 } from '../controllers/admin.controller';
+import { isAuthMiddleware } from '../middlewares/is-auth.middleware';
 
 export const adminRouter = Router();
 
-adminRouter.get('/add-product', getAddProduct);
-adminRouter.get('/products', getProducts);
-adminRouter.post('/add-product', postAddProductView);
-adminRouter.get('/edit-product/:productId', getEditProduct);
-adminRouter.post('/edit-product', postEditProduct);
-adminRouter.post('/delete-product', deleteProduct);
+adminRouter.get('/products', isAuthMiddleware, getProducts);
+adminRouter.get('/add-product', isAuthMiddleware, getAddProduct);
+adminRouter.post('/add-product', isAuthMiddleware, postAddProductView);
+adminRouter.get('/edit-product/:productId', isAuthMiddleware, getEditProduct);
+adminRouter.post('/edit-product', isAuthMiddleware, postEditProduct);
+adminRouter.post('/delete-product', isAuthMiddleware, deleteProduct);
