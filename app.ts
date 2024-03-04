@@ -42,19 +42,5 @@ app.use(getError);
 
 mongoose
   .connect(MONGO_DB_URI)
-  .then((_result) => {
-    app.listen(port, async () => {
-      console.log(`⚡️ [server]: Server is running at http://localhost:${port}`);
-      const user = await UserModel.findOne();
-      if (!user) {
-        const newUser = new UserModel({
-          name: 'John',
-          email: 'john@example.com',
-        });
-        await newUser.save();
-      }
-    });
-  })
-  .catch((error) => {
-    console.error('connection error: ', error);
-  });
+  .then((_result) => app.listen(port))
+  .catch((error) => console.error('connection error: ', error));
