@@ -5,10 +5,8 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
-}
-
-export interface IUserWithId extends IUser {
-  id: string;
+  resetToken?: string;
+  resetTokenExp?: Date;
 }
 
 const UserSchema = new Schema({
@@ -23,6 +21,14 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true,
+  },
+  resetToken: {
+    type: String,
+    required: false,
+  },
+  resetTokenExp: {
+    type: Date,
+    required: false,
   },
 });
 

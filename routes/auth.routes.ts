@@ -1,5 +1,13 @@
 import { Router } from 'express';
-import { getLogin, getSignup, postLogin, postLogout, postSignup } from '../controllers/auth.controller';
+import {
+  getLogin,
+  getReset,
+  getSignup,
+  postLogin,
+  postLogout,
+  postReset,
+  postSignup, getNewPassword, postNewPassword,
+} from '../controllers/auth.controller';
 
 export const authRouter = Router();
 
@@ -10,3 +18,8 @@ authRouter.post('/logout', postLogout);
 
 authRouter.get('/signup', getSignup);
 authRouter.post('/signup', postSignup);
+
+authRouter.get('/reset', getReset);
+authRouter.get('/new-password/:token', getNewPassword);
+authRouter.post('/new-password', postNewPassword);
+authRouter.post('/reset', postReset);

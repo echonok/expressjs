@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 
 import { IProduct, IProductWithId, ProductModel } from '../models/product.model';
 import { CustomRequest } from '../middlewares/attach-properties.middleware';
+import { UserModel } from '../models/user.model';
 
 export const getAddProduct: RequestHandler = async (req: CustomRequest, res) => {
   return res.render(
@@ -16,7 +17,8 @@ export const getAddProduct: RequestHandler = async (req: CustomRequest, res) => 
 };
 
 export const getEditProduct: RequestHandler = async (req: CustomRequest, res) => {
-  const productId = <{ productId: string }>req.params;
+  const { productId } = <{ productId: string }>req.params;
+  console.log({ productId });
   const product = await ProductModel.findById(productId);
   if (!product) {
     return res.redirect('/');
@@ -36,15 +38,22 @@ export const getEditProduct: RequestHandler = async (req: CustomRequest, res) =>
 export const postEditProduct: RequestHandler = async (req: CustomRequest, res) => {
   const { _id, ...product } = <IProductWithId>req.body;
   const { userId } = req.session;
-  await ProductModel.findByIdAndUpdate(_id, { ...product, userId }, { upsert: true, new: true });
+  const foundProduct = await ProductModel.findById(_id);
+  if (!foundProduct || foundProduct.userId.toString() !== userId) {
+    return res.redirect('/');
+  }
+  await ProductModel.findByIdAndUpdate({ _id: _id }, { ...product, userId }, { upsert: true, new: true });
   return res.redirect('/admin/products');
 };
 
-export const deleteProduct: RequestHandler<{ productId: string }> = async (req, res) => {
+export const deleteProduct: RequestHandler = async (req: CustomRequest, res) => {
   const { productId } = (<{ productId: string }>req.body);
-  if (productId) {
-    await ProductModel.findByIdAndDelete(productId);
+  const { userId } = req.session;
+  const foundProduct = await ProductModel.findById(productId);
+  if (!foundProduct || foundProduct.userId.toString() !== userId) {
+    return res.redirect('/');
   }
+  await ProductModel.findByIdAndDelete(productId);
   return res.redirect('/admin/products');
 };
 
@@ -57,7 +66,7 @@ export const postAddProductView: RequestHandler = async (req: CustomRequest, res
 };
 
 export const getProducts: RequestHandler = async (req: CustomRequest, res) => {
-  const products = await ProductModel.find();
+  const products = await ProductModel.find({ userId: req.session.userId });
   res.render(
     'admin/products',
     {
