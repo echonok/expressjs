@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import { validationResult } from 'express-validator';
 
 import { CustomRequest } from '../middlewares/attach-properties.middleware';
 import { UserModel } from '../models/user.model';
@@ -56,11 +57,15 @@ export const getSignup: RequestHandler = async (req, res) => {
 };
 
 export const postSignup: RequestHandler = async (req, res) => {
-  const { email, password, confirmPassword } = req.body;
-  const foundUser = await UserModel.findOne({ email });
-  if (foundUser) {
-    req.flash('error', 'User is already exist');
-    return res.redirect('/signup');
+  const { email, password } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/signup', {
+      path: '/signup',
+      pageTitle: 'Signup',
+      errorMessage: errors.array().map((e) => e.msg).join(', '),
+      isAuthenticated: false,
+    });
   }
   const encryptedPassword = await bcrypt.hash(password, 12);
   const newUser = new UserModel({
