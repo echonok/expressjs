@@ -16,22 +16,38 @@ export const getLogin: RequestHandler = async (req: CustomRequest, res) => {
       path: '/login',
       pageTitle: 'Login',
       errorMessage: message,
+      oldInput: { email: '', password: '' },
       isAuthenticated: req.session.isLoggedIn,
+      validationErrors: [],
     },
   );
 };
 
 export const postLogin: RequestHandler = async (req: CustomRequest, res) => {
   const { email, password } = req.body;
-  const user = await UserModel.findOne({ email }).lean();
-  if (!user) {
-    req.flash('error', 'Invalid email or password');
-    return res.redirect('/login');
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/login', {
+      path: '/login',
+      pageTitle: 'Login',
+      errorMessage: errors.array().map((e) => e.msg).join(', '),
+      oldInput: { email, password },
+      isAuthenticated: false,
+      validationErrors: errors.array(),
+    });
   }
+  const user = await UserModel.findOne({ email }).lean();
   const isPasswordCorrect = await bcrypt.compare(password, user.password);
   if (!isPasswordCorrect) {
     req.flash('error', 'Invalid email or password');
-    return res.redirect('/login');
+    return res.status(422).render('auth/login', {
+      path: '/login',
+      pageTitle: 'Login',
+      errorMessage: 'Invalid email or password',
+      oldInput: { email, password },
+      isAuthenticated: false,
+      validationErrors: [],
+    });
   }
   req.session.userId = user._id.toString();
   req.session.isLoggedIn = true;
@@ -52,18 +68,23 @@ export const getSignup: RequestHandler = async (req, res) => {
     path: '/signup',
     pageTitle: 'Signup',
     errorMessage: message,
+    oldInput: { email: '', password: '', confirmPassword: '' },
+    validationErrors: [],
     isAuthenticated: false,
   });
 };
 
 export const postSignup: RequestHandler = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, confirmPassword } = req.body;
   const errors = validationResult(req);
+  console.log('errors.array()', errors.array());
   if (!errors.isEmpty()) {
     return res.status(422).render('auth/signup', {
       path: '/signup',
       pageTitle: 'Signup',
       errorMessage: errors.array().map((e) => e.msg).join(', '),
+      oldInput: { email, password, confirmPassword },
+      validationErrors: errors.array(),
       isAuthenticated: false,
     });
   }
